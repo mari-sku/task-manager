@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 // Class name is AppUser, because 'User' is already a class in Spring Security
 
@@ -25,6 +26,7 @@ public class AppUser {
     private String username;
 
     @Column(name = "password", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(name = "email", nullable = false, unique = true) // emails must be unique
@@ -53,6 +55,17 @@ public class AppUser {
         this.role = role;
         this.tasks = tasks;
         this.projects = projects;
+    }
+
+    // constructor without tasks and projects
+    
+    public AppUser(String username, String password, String email, String role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.tasks = null;
+        this.projects = null;
     }
 
     // Getters and setters

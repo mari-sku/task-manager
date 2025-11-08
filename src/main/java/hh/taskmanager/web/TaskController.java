@@ -2,11 +2,13 @@ package hh.taskmanager.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.validation.Valid;
 
 import hh.taskmanager.domain.AppUserRepository;
 import hh.taskmanager.domain.CategoryRepository;
@@ -45,7 +47,7 @@ public class TaskController {
     // ADD NEW TASK (WHEN CLICKED FROM A SPECIFIC PROJECT)
 
     @GetMapping("/addtask/{projectId}")
-        public String showAddTaskFormForProject(@PathVariable Long projectId, Model model) {
+    public String showAddTaskFormForProject(@PathVariable Long projectId, Model model) {
         Task task = new Task();
         projectRepository.findById(projectId).ifPresent(task::setProject); // pre-select the project
         model.addAttribute("task", task);
@@ -53,13 +55,18 @@ public class TaskController {
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("appusers", appUserRepository.findAll());
 
-    return "addtask"; // same template (addtask.html), but project preselected
-}
+        return "addtask"; // addtask.html
+    }
 
     // SAVE TASK
     @PostMapping("/savetask")
-    public String saveTask(@ModelAttribute Task task) {
-        // IF the task will not have a project assigned, it will automatically go to unassigned tasks, thanks to the findByProjectIsNull() method in TaskRepository"
+    public String saveTask(@Valid @ModelAttribute Task task, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("projects", projectRepository.findAll());
+            model.addAttribute("categories", categoryRepository.findAll());
+            model.addAttribute("appusers", appUserRepository.findAll());
+            return "addtask";
+        }
         taskRepository.save(task);
         return "redirect:/projects";
     }
@@ -71,15 +78,42 @@ public class TaskController {
         return "redirect:/projects";
     }
 
-    // TOGGLE TASK AS COMPLETED 
+    // EDIT TASK
+    @GetMapping("/edittask/{taskId}")
+    public String showEditTaskForm(@PathVariable Long taskId, Model model) {
+        Task task = taskRepository.findById(taskId).orElseThrow();
+        model.addAttribute("task", task);
+        model.addAttribute("projects", projectRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("appusers", appUserRepository.findAll());
+        return "edittask"; // edittask.html
+    }
+
+    // SAVE EDITED TASK
+
+    @PostMapping("/edittask/{taskId}")
+    public String saveEditedTask(@PathVariable Long taskId, @ModelAttribute Task task) {
+        Task existingTask = taskRepository.findById(taskId).orElseThrow();
+
+        existingTask.setTitle(task.getTitle());
+        existingTask.setDescription(task.getDescription());
+        existingTask.setDueDateTime(task.getDueDateTime());
+        existingTask.setPrivate(task.isPrivate());
+        existingTask.setCategory(task.getCategory());
+        existingTask.setProject(task.getProject());
+
+        taskRepository.save(existingTask);
+        return "redirect:/projects";
+    }
+
+    // TOGGLE TASK AS COMPLETED
 
     @PostMapping("/tasks/{id}/toggle")
-public String toggleTaskCompletion(@PathVariable Long id) {
-    Task task = taskRepository.findById(id).orElseThrow();
-    task.setCompleted(!task.isCompleted());
-    taskRepository.save(task);
-    return "redirect:/projects";
-}
-
+    public String toggleTaskCompletion(@PathVariable Long id) {
+        Task task = taskRepository.findById(id).orElseThrow();
+        task.setCompleted(!task.isCompleted());
+        taskRepository.save(task);
+        return "redirect:/projects";
+    }
 
 }

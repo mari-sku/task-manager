@@ -1,285 +1,244 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
     <title>Projects and Tasks</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" th:href="@{/css/projects.css}">
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        /* Bold section titles */
-        h2.subtitle {
-            font-weight: 700;
-        }
-
-        .button.custom-add-task {
-    background-color: #a0a0a0; /* your custom color */
-    color: rgb(255, 255, 255);
-}
-
-        /* Category-based task colors */
-        .work { background-color: #d1e8fa; }
-        .personal { background-color: #ffe9e9; }
-        .errands { background-color: #fdfbe8; }
-        .other { background-color: #f2edfa; }
-
-        /* Task card styling */
-        .task-card, li {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            position: relative;
-            border: 1px solid #e5e5e5;
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .task-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-        }
-
-        /* Project container */
-        .project-card {
-            background-color: #f1f1f1;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        /* Dropdown menu (three dots) */
-        .dropdown-trigger {
-            position: absolute;
-            top: -0.25rem;
-            left: -0.25rem;
-        }
-
-        .dropdown-trigger button {
-            background: transparent;
-            border: none;
-            padding: 0;
-            font-size: 0.9rem; /* smaller three dots */
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 1.5rem;
-            left: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        .dropdown-menu .dropdown-item {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* Checkbox styling */
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .task-title-container {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            margin-left: 2rem; /* offset to not overlap dropdown */
-        }
-
-        .task-title {
-            font-weight: 500;
-        }
-
-        .task-due {
-            font-size: 0.75rem;
-            color: #555;
-            min-height: 1rem; /* ensures empty due dates still take up space */
-            margin-bottom: 0.25rem;
-        }
-
-        /* Completed tasks */
-        .completed .task-title {
-            text-decoration: line-through;
-            color: gray;
-        }
-    </style>
 </head>
 
- <!-- ________________________________________________________________________________________________________________________________________________________________________ -->
 <body>
+    <!-- top bar -->
+    <nav class="navbar custom-navbar p-3 mb-5" role="navigation">
+        <div class="container is-flex is-align-items-center is-justify-content-space-between"
+            style="position: relative;">
 
-<section class="section">
-    <div class="container">
-
-        <!-- Header -->
-        <h1 class="title has-text-centered mb-6">Tasks and Projects</h1>
- <!-- ________________________________________________________________________________________________________________________________________________________________________ -->
-
-        <!-- Global Add Task Button -->
-        <div class="has-text-centered mb-5">
-            <a th:href="@{/addtask}" class="button custom-add-task">
-                <span class="icon"><i data-lucide="plus"></i></span>
-                <span>Add Task</span>
-            </a>
-        </div>
-
- <!-- ________________________________________________________________________________________________________________________________________________________________________ -->
-
-        <!-- UNASSIGNED TASKS -->
-        <div class="mb-6">
-            <h2 class="subtitle">Tasks</h2>
-
-            <div th:if="${#lists.isEmpty(unassignedTasks)}">
-                <p class="has-text-grey">No tasks. Try adding one!</p>
+            <!-- greeting (only if logged in) -->
+            <div class="is-flex is-align-items-center gap-3" sec:authorize="isAuthenticated()">
+                <span class="has-text-weight-medium">Hello, <span sec:authentication="name"></span>!</span>
+                <!-- Admin Users button, only visible to admins -->
+                <a th:href="@{/admin/users}" class="button is-info is-light is-small" sec:authorize="hasAuthority('ADMIN')">
+                    Manage Users
+                </a>
             </div>
 
-            <div th:if="${!#lists.isEmpty(unassignedTasks)}" class="task-grid">
-                <div th:each="task : ${unassignedTasks}"
-                     th:classappend="(${task.completed} ? ' completed' : '') + ' ' + (${task.category != null} ? ${task.category.name.toLowerCase()} : 'other')"
-                     class="task-card">
+            <!-- app title -->
+            <div style="position: absolute; left: 50%; transform: translateX(-50%);">
+                <h1 class="title is-4 has-text-weight-semibold m-0">TaskManager</h1>
+            </div>
 
-                    <!-- Three-dot menu -->
-                    <div class="dropdown">
-                        <div class="dropdown-trigger">
-                            <button aria-haspopup="true">⋮</button>
+            <!-- log out button (only if logged in) -->
+            <form th:action="@{/logout}" method="post" class="m-0" sec:authorize="isAuthenticated()">
+                <button type="submit" class="button is-danger is-light is-small">Log out</button>
+            </form>
+
+            <!-- log in button (only if not logged in) -->
+            <div sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="button is-primary is-light is-small">Log in</a>
+            </div>
+
+        </div>
+    </nav>
+
+<!-- _______________________________________________________________________________________________________________________________________________-->
+
+    <section class="section">
+        <div class="container">
+
+            <!-- global add task button -->
+            <div class="has-text-centered mb-5" sec:authorize="isAuthenticated()">
+                <a th:href="@{/addtask}" class="button is-custom">
+                    <span class="icon"><i data-lucide="plus"></i></span>
+                    <span>Add Task</span>
+                </a>
+            </div>
+
+            <!-- UNASSIGNED TASKS -->
+            <div class="mb-6">
+                <h2 class="subtitle">TASKS</h2>
+
+                <div th:if="${#lists.isEmpty(unassignedTasks)}">
+                    <p class="has-text-grey">No tasks. Try adding one!</p>
+                </div>
+
+                <div th:if="${!#lists.isEmpty(unassignedTasks)}" class="task-grid">
+                    <div th:each="task : ${unassignedTasks}"
+                        th:classappend="(${task.completed} ? ' completed' : '') + ' ' + (${task.category != null} ? ${task.category.name.toLowerCase()} : 'other')"
+                        class="task-card">
+
+                        <!-- Three-dot menu for unassigned tasks -->
+                        <div class="dropdown" sec:authorize="isAuthenticated()">
+                            <div class="dropdown-trigger">
+                                <button aria-haspopup="true">⋮</button>
+                            </div>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" th:href="@{'/edittask/' + ${task.taskId}}">Edit Task</a>
+                                <a class="dropdown-item" th:href="@{'/deletetask/' + ${task.taskId}}" onclick="return confirm('Delete this task?');"> Delete Task</a>
+                            </div>
                         </div>
-                        <div class="dropdown-menu">
-                            <div class="dropdown-item" th:href="@{'/edittask/' + ${task.taskId}}">Edit Task</div>
-                            <div class="dropdown-item" th:href="@{'/deletetask/' + ${task.taskId}}">Delete Task</div>
+
+                        <!-- Task due date and title -->
+                        <div class="task-title-container">
+                            <span class="task-due"
+                                th:text="${task.dueDateTime != null} ? ${#temporals.format(task.dueDateTime, 'HH:mm MMM d, yyyy')} : ''">&nbsp;</span>
+                            <span class="task-title" th:text="${task.title}">Task title</span>
                         </div>
-                    </div>
 
-                    <!-- Task due date and title -->
-                    <div class="task-title-container">
-                        <span class="task-due" th:text="${task.dueDateTime != null} ? ${#temporals.format(task.dueDateTime, 'HH:mm MMM d, yyyy')} : ''">&nbsp;</span>
-                        <span class="task-title" th:text="${task.title}">Task title</span>
+                        <!-- Checkbox for completed -->
+                        <form th:action="@{'/tasks/' + ${task.taskId} + '/toggle'}" method="post"
+                            sec:authorize="isAuthenticated()">
+                            <input type="checkbox" name="completed" th:checked="${task.completed}">
+                        </form>
                     </div>
-
-                    <!-- Checkbox for completed -->
-                    <form th:action="@{'/tasks/' + ${task.taskId} + '/toggle'}" method="post">
-                        <input type="checkbox" name="completed" th:checked="${task.completed}">
-                    </form>
                 </div>
             </div>
-        </div>
 
-<!-- __________________________________________________________________________________________________________________________________________________________________________________________ -->
+<!-- _______________________________________________________________________________________________________________________________________________-->
 
-        <!-- PROJECTS -->
-        <div>
+            <!-- PROJECTS -->
+            <div>
 
-            <!-- header -->
-            <h2 class="subtitle">Projects</h2>
+                <!-- add project button -->
+                <div class="has-text-centered mb-5" sec:authorize="isAuthenticated()">
+                    <a th:href="@{/addproject}" class="button is-custom">
+                        <span class="icon"><i data-lucide="plus"></i></span>
+                        <span>Add Project</span>
+                    </a>
+                </div>
+                <!-- header -->
+                <h2 class="subtitle">PROJECTS</h2>
+<!-- 
+                if there are no projects yet -->
+                <div th:if="${#lists.isEmpty(projects)}">
+                    <p class="has-text-grey">No projects yet. Try creating one!</p>
+                </div>
 
-            <!-- if there are no projects -->
-            <div th:if="${#lists.isEmpty(projects)}">
-                <p class="has-text-grey">No projects yet. Try creating one!</p>
-            </div>
+                <div th:if="${projects}">
+                    <div th:each="project : ${projects}" class="project-card">
+                        <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
+                            <div class="is-flex is-align-items-center">
+                                <div class="dropdown" sec:authorize="isAuthenticated()">
+                                    <div class="dropdown-trigger">
+                                        <button aria-haspopup="true">⋮</button>
+                                    </div>
 
-            <!-- project task cards -->
-            <div th:if="${projects}">
-                <div th:each="project : ${projects}" class="project-card">
-                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
-                        <div>
-                            <h3 class="title is-5 mb-1" th:text="${project.name}">Project Name</h3>
-                            <p class="has-text-grey" th:text="${project.description}">Project description</p>
-                        </div>
-                        <!-- add task to a project -->
-                        <a th:href="@{'/addtask/' + ${project.projectId}}" class="button is-success is-light">
-                            <span class="icon"><i data-lucide="plus"></i></span>
-                            <span>Add Task</span>
-                        </a>
-                    </div>
-
-                    <ul>
-                        <!-- show tasks, enable togglign it completed, enable colours for task cards based on category -->
-                        <li th:each="task : ${project.tasks}"
-                            th:classappend="(${task.completed} ? ' completed' : '') + ' ' + (${task.category != null} ? ${task.category.name.toLowerCase()} : 'other')"
-                            class="task-card">
-
-                            <!-- Three-dot menu -->
-                            <div class="dropdown">
-                                <div class="dropdown-trigger">
-                                    <button aria-haspopup="true">⋮</button>
+                                    <!-- three dot menu for project -->
+                                    <div class="dropdown-menu" sec:authorize="isAuthenticated()">
+                                        <a class="dropdown-item"
+                                            th:href="@{'/editproject/' + ${project.projectId}}">Edit Project</a>
+                                        <a class="dropdown-item"
+                                            th:href="@{'/deleteproject/' + ${project.projectId}}"onclick="return confirm('Delete this project and its tasks?');">Delete Project</a>
+                                    </div>
                                 </div>
-                                <div class="dropdown-menu">
-                                    <div class="dropdown-item" th:href="@{'/edittask/' + ${task.taskId}}">Edit Task</div>
-                                    <div class="dropdown-item" th:href="@{'/deletetask/' + ${task.taskId}}">Delete Task</div>
+
+                                <div style="margin-left:0.5rem;">
+                                    <h3 class="title is-5 mb-1" th:text="${project.name}">Project Name</h3>
+                                    <p class="has-text-grey" th:text="${project.description}">Project description</p>
                                 </div>
                             </div>
 
-                            <!-- Task due date and title -->
-                            <div class="task-title-container">
-                                <span class="task-due" th:text="${task.dueDateTime != null} ? ${#temporals.format(task.dueDateTime, 'HH:mm MMM d, yyyy')} : ''">&nbsp;</span>
-                                <span class="task-title" th:text="${task.title}">Task title</span>
-                            </div>
+                            <!-- add task to a project -->
+                            <a th:href="@{'/addtask/' + ${project.projectId}}" class="button is-custom"
+                                sec:authorize="isAuthenticated()">
+                                <span class="icon"><i data-lucide="plus"></i></span>
+                                <span>Add Task</span>
+                            </a>
+                        </div>
 
-                            <!-- Checkbox  -->
-                            <form th:action="@{'/tasks/' + ${task.taskId} + '/toggle'}" method="post">
-                                <input type="checkbox" name="completed" th:checked="${task.completed}">
-                            </form>
-                        </li>
-                    </ul>
-                    <!-- if there are no tasks in the project -->
-                    <p th:if="${#lists.isEmpty(project.tasks)}" class="has-text-grey">
-                        No tasks yet.
-                    </p>
+                        <!-- project task cards -->
+                        <div th:if="${!#lists.isEmpty(project.tasks)}" class="task-grid"> 
+                            <div th:each="task : ${project.tasks}"
+                                th:classappend="(${task.completed} ? ' completed' : '') + ' ' + (${task.category != null} ? ${task.category.name.toLowerCase()} : 'other')"
+                                class="task-card">
+
+                                <!-- Three-dot menu for project tasks -->
+                                <div class="dropdown" sec:authorize="isAuthenticated()">
+                                    <div class="dropdown-trigger">
+                                        <button aria-haspopup="true">⋮</button>
+                                    </div>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" th:href="@{'/edittask/' + ${task.taskId}}">Edit
+                                            Task</a>
+                                        <a class="dropdown-item" th:href="@{'/deletetask/' + ${task.taskId}}"onclick="return confirm('Delete this task?');">Delete
+                                            Task</a>
+                                    </div>
+                                </div>
+
+                                <!-- Task due date and title -->
+                                <div class="task-title-container">
+                                    <span class="task-due"
+                                        th:text="${task.dueDateTime != null} ? ${#temporals.format(task.dueDateTime, 'HH:mm MMM d, yyyy')} : ''">&nbsp;</span>
+                                    <span class="task-title" th:text="${task.title}">Task title</span>
+                                </div>
+
+                                <!-- Checkbox -->
+                                <form th:action="@{'/tasks/' + ${task.taskId} + '/toggle'}" method="post" sec:authorize="isAuthenticated()">
+                                    <input type="checkbox" name="completed" th:checked="${task.completed}">
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- if there are no tasks in the project -->
+                        <p th:if="${#lists.isEmpty(project.tasks)}" class="has-text-grey">
+                            No tasks yet. Try adding one!
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-<!-- _______________________________________________________________________________________________________________________________________________________________________________________________ -->
-<script>
-    lucide.createIcons();
+    </section>
+<!-- _______________________________________________________________________________________________________________________________________________-->
+    <script>
 
-    // Toggle task completion without page reload
-    document.querySelectorAll('input[type="checkbox"][name="completed"]').forEach(cb => {
-        cb.addEventListener('change', () => {
-            fetch(cb.closest('form').action, { method: 'POST' });
-            cb.closest('.task-card, li').classList.toggle('completed', cb.checked);
+        // script for the icon used in add buttons
+        lucide.createIcons();
+
+        // quality of life scripts (scroll position, dropdowns, etc.)
+
+        // Toggle task completion without page reload
+        document.querySelectorAll('input[type="checkbox"][name="completed"]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                fetch(cb.closest('form').action, { method: 'POST' });
+                cb.closest('.task-card').classList.toggle('completed', cb.checked);
+            });
         });
-    });
 
-    // Dropdown click toggle
-    document.querySelectorAll('.dropdown-trigger button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const menu = btn.closest('.dropdown').querySelector('.dropdown-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        // Dropdown click toggle
+        document.querySelectorAll('.dropdown-trigger button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const menu = btn.closest('.dropdown').querySelector('.dropdown-menu');
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            });
         });
-    });
 
-    // Close dropdown if clicked outside
-    document.addEventListener('click', function(event) {
-        document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            if (!menu.closest('.dropdown').contains(event.target)) {
-                menu.style.display = 'none';
+        // Close dropdown if clicked outside
+        document.addEventListener('click', function (event) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (!menu.closest('.dropdown').contains(event.target)) {
+                    menu.style.display = 'none';
+                }
+            });
+        });
+
+        // Save scroll position before clicking delete
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                sessionStorage.setItem('scrollY', window.scrollY);
+            });
+        });
+
+        // Restore scroll position on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const scrollY = sessionStorage.getItem('scrollY');
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY));
+                sessionStorage.removeItem('scrollY');
             }
         });
-    });
-</script>
+    </script>
 
 </body>
+
 </html>

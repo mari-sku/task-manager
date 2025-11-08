@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface AppUserRepository extends CrudRepository<AppUser, Long> {
 
 // this method will be used by Spring Security to load user details during authentication
-AppUser findByUsername(String username);
+<Optional>AppUser findByUsername(String username);
 
 }

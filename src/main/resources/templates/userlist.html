@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body style="background-color:#eeeeee;">
+
+    <section class="section">
+        <div class="container" style="max-width:800px;">
+            <div class="level mb-4">
+                <div class="level-left">
+                    <a th:href="@{/projects}" class="button is-light">Back</a>
+                </div>
+                <div class="level-item has-text-centered">
+                    <h1 class="title is-4">Users</h1>
+                </div>
+                <div class="level-right"></div>
+            </div>
+
+            <div class="box">
+                <table class="table is-fullwidth is-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.username}">username</td>
+                            <td th:text="${user.email}">email</td>
+                            <td th:text="${user.role}">role</td>
+                            <td class="has-text-right">
+                                <form th:if="${user.role != 'ADMIN'}"
+                                      th:action="@{'/admin/users/delete/' + ${user.appUserId}}"
+                                      method="post"
+                                      onsubmit="return confirm('Delete this user?');">
+                                    <button class="button is-small is-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

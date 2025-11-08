@@ -36,9 +36,19 @@ public class Category {
     public Category(String name, String description) {
         this.name = name;
         this.description = description;
+        this.tasks = null;
     }
+
+     public Category(String name, String description, List<Task> tasks) {
+        this.name = name;
+        this.description = description;
+        this.tasks = tasks;
+    }
+
     
     // Getters and Setters
+
+   
 
     public long getCategoryId() {
         return categoryId;

@@ -7,6 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -22,15 +25,24 @@ public class Task {
     private long taskId;
 
     @Column(nullable = false)
+    // TASK TITLE  validation annotations
+    @NotBlank(message = "Task title is required")
+    @Size(min = 2, max = 150, message = "Title must be between 2 and 150 characters")
     private String title;
 
+    //TASK DESCRIPTION validation annotations
+    @Size(max = 1000, message = "Description must be less than 1000 characters")
     private String description; // OPTIONAL
 
+    // DUEDATETIME validation annotation
+    @FutureOrPresent(message = "Due date must be in the present or future")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) // yyyy-MM-dd'T'HH:mm follows iso-standards, i.e html uses this format                                     
     private LocalDateTime dueDateTime; // OPTIONAL
 
+    // default is always false in the constructors
     private boolean isCompleted;
 
+    // default is always true in the constructors
     private boolean isPrivate;
 
     @ManyToOne
@@ -59,8 +71,8 @@ public class Task {
         this.title = title;
         this.description = description;
         this.dueDateTime = dueDateTime;
-        this.isCompleted = false; // default is always false
-        this.isPrivate = isPrivate;
+        this.isCompleted = false;   // default is always false
+        this.isPrivate = true;      // default is always true
         this.category = category;
         this.project = project;
         this.assignedUser = assignedUser;
@@ -72,8 +84,8 @@ public Task(String title, boolean isCompleted, boolean isPrivate, Category categ
     this.title = title;
     this.description = null;
     this.dueDateTime = null;
-    this.isCompleted = isCompleted;
-    this.isPrivate = isPrivate;
+    this.isCompleted = false;   // default is always false
+    this.isPrivate = true;      // default is always true;
     this.category = category;
     this.project = null;
     this.assignedUser = assignedUser;

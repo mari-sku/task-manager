@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Add Project</title>
+    <title>Edit Project</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <style>
                body {
@@ -15,16 +15,18 @@
 <section class="section">
     <div class="container" style="max-width: 600px;">
 
-        <h1 class="title has-text-centered mb-5">Add New Project</h1>
+        <h1 class="title has-text-centered mb-5">Edit Project</h1>
 
-        <form th:action="@{/saveproject}" th:object="${project}" method="post" class="box">
+        <form th:object="${project}" th:action="@{/saveproject}" method="post" class="box">
+
+            <!-- hidden id -->
+            <input type="hidden" th:field="*{projectId}" />
 
             <!-- Project Name -->
             <div class="field">
                 <label class="label">Project Name</label>
                 <div class="control">
-                    <input class="input" type="text" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'is-danger' : ''">
-                    <p class="help is-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+                    <input class="input" type="text" th:field="*{name}" required>
                 </div>
             </div>
 
@@ -32,8 +34,7 @@
             <div class="field">
                 <label class="label">Description <span class="has-text-grey-light">(optional)</span></label>
                 <div class="control">
-                    <textarea class="textarea" th:field="*{description}" th:classappend="${#fields.hasErrors('description')} ? 'is-danger' : ''"></textarea>
-                    <p class="help is-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                    <textarea class="textarea" th:field="*{description}"></textarea>
                 </div>
             </div>
 
@@ -42,9 +43,9 @@
                 <label class="label">Visibility</label>
                 <div class="control">
                     <div class="select">
-                        <select name="isPrivate">
-                            <option value="false">Private</option>
-                            <option value="true">Public</option>
+                        <select th:field="*{private}">
+                            <option th:value="false" th:text="'Private'" />
+                            <option th:value="true" th:text="'Public'" />
                         </select>
                     </div>
                 </div>

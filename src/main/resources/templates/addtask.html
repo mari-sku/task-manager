@@ -1,175 +1,87 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Task</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <style>
-        body.has-background-light {
-            background-color: #f8f9fa;
-        }
-
-        /* Compact container */
-        .container.is-compact {
-            max-width: 480px;
-            margin: 1.5rem auto;
-            padding: 0.5rem;
-        }
-
-        /* Page title */
-        h1.title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        form.box {
-            padding: 1rem 1rem;
-            border-radius: 10px;
-        }
-
-        /* Fields */
-        .field {
-            margin-bottom: 0.75rem;
-        }
-
-        label.label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        input.input,
-        textarea.textarea,
-        .select select {
-            font-size: 0.85rem;
-            padding: 0.35rem 0.5rem;
-        }
-
-        /* Make Title field big and prominent */
-        input.input.title-field {
-            font-size: 1.3rem;
-            height: 2.7rem;
-            font-weight: 600;
-            padding: 0.4rem 0.5rem;
-        }
-
-        textarea.textarea {
-            min-height: 3rem;
-        }
-
-        .help {
-            font-size: 0.7rem;
-            margin-top: 0.2rem;
-        }
-
-        button.button {
-            font-size: 0.9rem;
-            padding: 0.5rem 0.75rem;
-            width: 100%;
-        }
-
-        .checkbox input[type="checkbox"] {
-            margin-right: 0.5rem;
-        }
-
-        .select select {
-            padding-top: 0.25rem;
-            padding-bottom: 0.25rem;
-        }
-
-        /* Optional label styling */
-        .optional {
-            font-weight: 400;
-            color: #7a7a7a;
-            font-size: 0.75rem;
-            margin-left: 0.25rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Add Task</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
-<body class="has-background-light">
+<body>
 
 <section class="section">
-    <div class="container is-compact">
-        <h1 class="title">Add a New Task</h1>
+  <div class="container" style="max-width: 600px;">
+    <h1 class="title has-text-centered mb-5">Add New Task</h1>
 
-        <form th:object="${task}" th:action="@{/savetask}" method="post" class="box">
+    <form th:object="${task}" th:action="@{/savetask}" method="post" class="box">
 
-            <!-- Title -->
-            <div class="field">
-                <label class="label">Title</label>
-                <div class="control">
-                    <input class="input title-field" type="text" th:field="*{title}" required/>
-                </div>
-            </div>
+      <!-- Title -->
+      <div class="field">
+        <label class="label">Title</label>
+        <div class="control">
+          <input class="input" type="text" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-danger'" required>
+          <p class="help is-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+        </div>
+      </div>
 
-            <!-- Description -->
-            <div class="field">
-                <label class="label">Description <span class="optional">(optional)</span></label>
-                <div class="control">
-                    <textarea class="textarea" th:field="*{description}"></textarea>
-                </div>
-            </div>
+      <!-- Description -->
+      <div class="field">
+        <label class="label">Description <span class="has-text-grey-light">(optional)</span></label>
+        <div class="control">
+          <textarea class="textarea" th:field="*{description}" th:classappend="${#fields.hasErrors('description')} ? 'is-danger'"></textarea>
+          <p class="help is-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+        </div>
+      </div>
 
-            <!-- Due Date -->
-            <div class="field">
-                <label class="label">Due Date & Time <span class="optional">(optional)</span></label>
-                <div class="control">
-                    <input class="input" type="datetime-local" th:field="*{dueDateTime}">
-                </div>
-                <p class="help has-text-grey">Leave empty if this task has no deadline.</p>
-            </div>
+      <!-- Due Date -->
+      <div class="field">
+        <label class="label">Due Date & Time <span class="has-text-grey-light">(optional)</span></label>
+        <div class="control">
+          <input class="input" type="datetime-local" th:field="*{dueDateTime}" th:classappend="${#fields.hasErrors('dueDateTime')} ? 'is-danger'">
+          <p class="help is-danger" th:if="${#fields.hasErrors('dueDateTime')}" th:errors="*{dueDateTime}"></p>
+        </div>
+        <p class="help has-text-grey">Leave empty if no deadline.</p>
+      </div>
 
-            <!-- Private -->
-            <div class="field">
-                <label class="checkbox">
-                    <input type="checkbox" th:field="*{private}">
-                    Private task
-                </label>
-            </div>
+      <!-- Category -->
+      <div class="field">
+        <label class="label">Category</label>
+        <div class="control">
+          <div class="select is-fullwidth" th:classappend="${#fields.hasErrors('category')} ? 'is-danger'">
+            <select th:field="*{category}">
+              <option value="" disabled selected>-- Select a category --</option>
+              <option th:each="category : ${categories}"
+                      th:value="${category.categoryId}"
+                      th:text="${category.name}">
+              </option>
+            </select>
+          </div>
+          <p class="help is-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></p>
+        </div>
+      </div>
 
-            <!-- Category -->
-            <div class="field">
-                <label class="label">Category</label>
-                <div class="control">
-                    <div class="select is-fullwidth">
-                        <select th:field="*{category}">
-                            <option value="" disabled selected>-- Select a category --</option>
-                            <option th:each="category : ${categories}"
-                                    th:value="${category.categoryId}"
-                                    th:text="${category.name}">
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+      <!-- Project -->
+      <div class="field">
+        <label class="label">Project <span class="has-text-grey-light">(optional)</span></label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select th:field="*{project}">
+              <option value="">-- None --</option>
+              <option th:each="project : ${projects}"
+                      th:value="${project.projectId}"
+                      th:text="${project.name}">
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-            <!-- Project -->
-            <div class="field">
-                <label class="label">Project <span class="optional">(optional)</span></label>
-                <div class="control">
-                    <div class="select is-fullwidth">
-                        <select th:field="*{project}">
-                            <option value="">-- None --</option>
-                            <option th:each="project : ${projects}"
-                                    th:value="${project.projectId}"
-                                    th:text="${project.name}">
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+      <!-- Submit & Cancel -->
+      <div class="field has-text-centered mt-5">
+        <button class="button is-link is-light" type="submit">Save Task</button>
+        <a th:href="@{/projects}" class="button is-light ml-2">Cancel</a>
+      </div>
 
-            <!-- Submit Button -->
-            <div class="field">
-                <div class="control">
-                    <button class="button is-primary">Save Task</button>
-                </div>
-            </div>
-
-        </form>
-    </div>
+    </form>
+  </div>
 </section>
 
 </body>

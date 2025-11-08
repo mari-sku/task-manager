@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,8 +24,13 @@ public class Project {
     private long projectId;
 
     @Column(nullable = false)
+    // PROJECT NAME validation annotations
+    @NotBlank(message = "Project name is required")
+    @Size(min = 2, max = 100, message = "Project name must be between 2 and 100 characters")
     private String name;
 
+    // PROJECT DESCRIPTION validation annotations
+    @Size(max = 5000, message = "Description must be less than 500 characters")
     private String description; // OPTIONAL
 
     private boolean isPrivate;
@@ -32,7 +40,7 @@ public class Project {
     @JsonIgnoreProperties("projects") // to avoid infinite loop during JSON serialization
     private AppUser assignedUser;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)  // when a project is deleted, its tasks are also deleted. orphanremoval needed
     @JsonIgnoreProperties("project") // to avoid infinite loop during JSON serialization
     private List<Task> tasks;
 

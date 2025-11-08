@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        body {
+            background-color: #eeeeee;
+        }
+
+    </style>
+</head>
+<body>
+
+<section class="section">
+    <div class="container" style="max-width: 600px;">
+        <h1 class="title has-text-centered mb-5">Edit Task</h1>
+
+        <form th:object="${task}" th:action="@{'/edittask/' + ${task.taskId}}" method="post" class="box">
+
+            <!-- title -->
+            <div class="field">
+                <label class="label">Title</label>
+                <div class="control">
+                    <input class="input" type="text" th:field="*{title}" required>
+                </div>
+            </div>
+
+            <!-- description -->
+            <div class="field">
+                <label class="label">Description <span class="has-text-grey-light">(optional)</span></label>
+                <div class="control">
+                    <textarea class="textarea" th:field="*{description}"></textarea>
+                </div>
+            </div>
+
+            <!-- due date -->
+            <div class="field">
+                <label class="label">Due Date & Time <span class="has-text-grey-light">(optional)</span></label>
+                <div class="control">
+                    <input class="input" type="datetime-local" th:field="*{dueDateTime}">
+                </div>
+                <p class="help has-text-grey">Leave empty if no deadline.</p>
+            </div>
+
+            <!-- category -->
+            <div class="field">
+                <label class="label">Category</label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select th:field="*{category}">
+                            <option value="" disabled>-- Select a category --</option>
+                            <option th:each="category : ${categories}"
+                                            th:value="${category.categoryId}"
+                                            th:text="${category.name}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- project -->
+            <div class="field">
+                <label class="label">Project <span class="has-text-grey-light">(optional)</span></label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select th:field="*{project}">
+                            <option value="">-- None --</option>
+                            <option th:each="project : ${projects}"
+                                            th:value="${project.projectId}"
+                                            th:text="${project.name}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit & Cancel -->
+            <div class="field has-text-centered mt-5">
+                <button class="button is-link is-light" type="submit">Save Task</button>
+                <a th:href="@{/projects}" class="button is-light ml-2">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+</body>
+</html>
