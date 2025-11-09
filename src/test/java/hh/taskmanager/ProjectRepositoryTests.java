@@ -8,12 +8,14 @@ import hh.taskmanager.domain.AppUser;
 import hh.taskmanager.domain.AppUserRepository;
 import hh.taskmanager.domain.Project;
 import hh.taskmanager.domain.ProjectRepository;
+import jakarta.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
 @SpringBootTest
+@Transactional
 public class ProjectRepositoryTests {
 
     @Autowired

@@ -6,11 +6,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import hh.taskmanager.domain.Category;
 import hh.taskmanager.domain.CategoryRepository;
+import jakarta.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
+@Transactional
 @SpringBootTest
 public class CategoryRepositoryTests {
 
