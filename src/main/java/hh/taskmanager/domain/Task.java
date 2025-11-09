@@ -22,7 +22,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long taskId;
+    private Long taskId;
 
     @Column(nullable = false)
     // TASK TITLE  validation annotations

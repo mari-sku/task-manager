@@ -18,7 +18,7 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long categoryId;
+    private Long categoryId;
     
     @NotBlank(message = "Category name is required")
     @Column(nullable = false)

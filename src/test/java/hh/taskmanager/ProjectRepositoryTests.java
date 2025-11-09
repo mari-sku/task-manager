@@ -37,6 +37,7 @@ public class ProjectRepositoryTests extends DBCleanUpTestBase {
         assertThat(project.getName().equals("Test Project"));
         assertThat(project.getDescription().equals("I gotta test this"));
         assertThat(project.getAssignedUser().getAppUserId().equals(user1.getAppUserId()));
+
     }
 
     // FIND project by name test
@@ -53,7 +54,7 @@ public class ProjectRepositoryTests extends DBCleanUpTestBase {
         assertThat(found.get().getName().equals("Test Project"));
         assertThat(found.get().getDescription().equals("I gotta test this"));
         assertThat(found.get().getAssignedUser().getAppUserId().equals(user2.getAppUserId()));
-
+        
     }
 
         // FIND project by id test

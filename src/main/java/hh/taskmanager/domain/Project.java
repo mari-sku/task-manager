@@ -1,5 +1,6 @@
 package hh.taskmanager.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,7 +22,7 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long projectId;
+    private Long projectId;
 
     // PROJECT NAME validation annotations
     @NotBlank(message = "Project name is required")
@@ -54,6 +55,7 @@ public class Project {
         this.description = description;
         this.isPrivate = false; // default to false
         this.assignedUser = assignedUser;
+        this.tasks = new ArrayList<>();
     }
 
     // if description is not provided, it defaults to null
@@ -62,6 +64,7 @@ public class Project {
         this.description = null;
         this.isPrivate = isPrivate;
         this.assignedUser = assignedUser;
+        this.tasks = new ArrayList<>();
     }
 
     // Getters and Setters
