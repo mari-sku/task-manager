@@ -1,6 +1,5 @@
 package hh.taskmanager.web;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,22 +24,12 @@ public HomeController(ProjectRepository projectRepository, TaskRepository taskRe
 //_____________________________________________________________________________________________________________________________________________________________________________
 
 // "HOME" page showing all projects and unassigned tasks (tasks that don’t belong to a project)
+// I don't need to check whether a user is logged in or not. Spring Security takes care of it in the template (i.e sec:authorize="isAuthenticated()")
 @GetMapping({"/", "/projects"})
-public String showHomePage(Model model, Authentication authentication) {
+public String showHomePage(Model model) {
       model.addAttribute("projects", projectRepository.findAll());
-      model.addAttribute("unassignedTasks", taskRepository.findByProjectIsNull()); // findByProjectIsNull() is defined in TaskRepository. Spring generates the query automatically :)
-
-      // checking if user is authenticated (logged in)
-      if (authentication != null && authentication.isAuthenticated()) {
-        model.addAttribute("loggedIn", true);
-        model.addAttribute("username", authentication.getName());
-    } else {
-        model.addAttribute("loggedIn", false);
-    }
-    
+      model.addAttribute("unassignedTasks", taskRepository.findByProjectIsNull()); // findByProjectIsNull() is defined in TaskRepository. Spring generates the query automatically :) 
     return "projects";  // projects.html
-    
-    
 }
 
 }

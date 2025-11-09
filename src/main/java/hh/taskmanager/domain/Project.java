@@ -23,14 +23,13 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long projectId;
 
-    @Column(nullable = false)
     // PROJECT NAME validation annotations
     @NotBlank(message = "Project name is required")
     @Size(min = 2, max = 100, message = "Project name must be between 2 and 100 characters")
+    @Column(nullable = false)
     private String name;
 
-    // PROJECT DESCRIPTION validation annotations
-    @Size(max = 5000, message = "Description must be less than 500 characters")
+    @Size(max = 5000, message = "Description must be less than 5000 characters")
     private String description; // OPTIONAL
 
     private boolean isPrivate;

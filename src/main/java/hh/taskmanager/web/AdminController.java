@@ -12,7 +12,7 @@ import hh.taskmanager.domain.AppUser;
 import hh.taskmanager.domain.AppUserRepository;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin")   // every admin endpoint starts with /admin. easier to manage in websecurityconfig
 @PreAuthorize("hasAuthority('ADMIN')")  // secures all endpoints in this controller
 public class AdminController {
 

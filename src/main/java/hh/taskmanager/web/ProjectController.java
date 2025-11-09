@@ -36,11 +36,13 @@ public class ProjectController {
 @GetMapping("/addproject")
 public String showAddProjectForm(Model model) {
     model.addAttribute("project", new Project());
-    model.addAttribute("appusers", appUserRepository.findAll());  // to select owner of the project
     return "addproject";  // addproject.html
 }
 
 // SAVE PROJECT
+
+// this method takes into account the logged in user, but the full implementation of this feature is NOT DONE yet
+// @AuthenticationPrincipal is a Spring Security annotation that gives the current logged in user
 @PostMapping("/saveproject")
 public String saveProject(@Valid @ModelAttribute Project project, BindingResult bindingResult, @AuthenticationPrincipal User currentUser, Model model) {
     if (bindingResult.hasErrors()) {

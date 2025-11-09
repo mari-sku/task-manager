@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 
 import hh.taskmanager.domain.AppUserRepository;
@@ -36,7 +35,7 @@ public class TaskController {
 
     // ADD NEW TASK
     @GetMapping("/addtask")
-    public String showAddTaskForm(@RequestParam(required = false) Long projectId, Model model) {
+    public String showAddTaskForm(Long projectId, Model model) {
         model.addAttribute("task", new Task());
         model.addAttribute("projects", projectRepository.findAll());
         model.addAttribute("categories", categoryRepository.findAll());
@@ -49,7 +48,7 @@ public class TaskController {
     @GetMapping("/addtask/{projectId}")
     public String showAddTaskFormForProject(@PathVariable Long projectId, Model model) {
         Task task = new Task();
-        projectRepository.findById(projectId).ifPresent(task::setProject); // pre-select the project
+        projectRepository.findById(projectId).ifPresent(project -> task.setProject(project)); // the lambda pre-selects the project
         model.addAttribute("task", task);
         model.addAttribute("projects", projectRepository.findAll());
         model.addAttribute("categories", categoryRepository.findAll());
@@ -61,11 +60,13 @@ public class TaskController {
     // SAVE TASK
     @PostMapping("/savetask")
     public String saveTask(@Valid @ModelAttribute Task task, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {        
+            // bindingresult checks, if form fields are valid according to validation rules (i.e @size, @notnull, etc.)
+            // if errors are found, fetch the form and existing objects in DB (projects, categories, appusers) again 
             model.addAttribute("projects", projectRepository.findAll());
             model.addAttribute("categories", categoryRepository.findAll());
             model.addAttribute("appusers", appUserRepository.findAll());
-            return "addtask";
+            return "addtask"; // return to the same form, if there are errors
         }
         taskRepository.save(task);
         return "redirect:/projects";
@@ -81,7 +82,7 @@ public class TaskController {
     // EDIT TASK
     @GetMapping("/edittask/{taskId}")
     public String showEditTaskForm(@PathVariable Long taskId, Model model) {
-        Task task = taskRepository.findById(taskId).orElseThrow();
+        Task task = taskRepository.findById(taskId).orElseThrow(); //orElseThrow, because findById() returns Optional<Task>
         model.addAttribute("task", task);
         model.addAttribute("projects", projectRepository.findAll());
         model.addAttribute("categories", categoryRepository.findAll());
@@ -111,7 +112,7 @@ public class TaskController {
     @PostMapping("/tasks/{id}/toggle")
     public String toggleTaskCompletion(@PathVariable Long id) {
         Task task = taskRepository.findById(id).orElseThrow();
-        task.setCompleted(!task.isCompleted());
+        task.setCompleted(!task.isCompleted()); // If task.isCompleted() is true, !task.isCompleted() becomes false. If task.isCompleted() is false, !task.isCompleted() becomes true.
         taskRepository.save(task);
         return "redirect:/projects";
     }

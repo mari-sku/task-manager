@@ -59,11 +59,19 @@
             <div class="mb-6">
                 <h2 class="subtitle">TASKS</h2>
 
+                <!-- if there are no unassigned tasks yet
+                 #lists is a thymeleaf utility/helper object  -->
                 <div th:if="${#lists.isEmpty(unassignedTasks)}">
                     <p class="has-text-grey">No tasks. Try adding one!</p>
                 </div>
 
                 <div th:if="${!#lists.isEmpty(unassignedTasks)}" class="task-grid">
+    <!-- here i give the task ' completed' class if it's marked as completed, so it can use approriate class' css.
+      i also add a class based on the task's category, so it can use the approriate class' css 
+      ternary operator:
+      (condition) ? value_if_true : value_if_false
+       classappend is used to add classes to the task-card div
+      -->
                     <div th:each="task : ${unassignedTasks}"
                         th:classappend="(${task.completed} ? ' completed' : '') + ' ' + (${task.category != null} ? ${task.category.name.toLowerCase()} : 'other')"
                         class="task-card">
@@ -149,6 +157,12 @@
 
                         <!-- project task cards -->
                         <div th:if="${!#lists.isEmpty(project.tasks)}" class="task-grid"> 
+                        <!-- here i give the task ' completed' class if it's marked as completed, so it can use approriate class' css.
+                             i also add a class based on the task's category, so it can use the approriate class' css 
+                             ternary operator:
+                             (condition) ? value_if_true : value_if_false 
+                             classappend is used to add classes to the task-card div
+                             -->
                             <div th:each="task : ${project.tasks}"
                                 th:classappend="(${task.completed} ? ' completed' : '') + ' ' + (${task.category != null} ? ${task.category.name.toLowerCase()} : 'other')"
                                 class="task-card">

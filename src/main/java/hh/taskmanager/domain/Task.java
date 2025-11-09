@@ -31,6 +31,7 @@ public class Task {
     private String title;
 
     //TASK DESCRIPTION validation annotations
+// task description is not shown anywhere on the html templates yet, should be implemented later!!!
     @Size(max = 1000, message = "Description must be less than 1000 characters")
     private String description; // OPTIONAL
 

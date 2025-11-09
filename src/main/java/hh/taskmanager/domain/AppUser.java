@@ -11,6 +11,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 // Class name is AppUser, because 'User' is already a class in Spring Security
@@ -18,18 +22,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity(name = "users") // 'user' is a reserved keyword in SQL databases, so I'll use 'users' instead
 public class AppUser {
 
+    // validations are set, so in the future i can have a safer 'register' page
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false, updatable = false)
     private Long appUserId;
 
+    @NotBlank(message = "A unique username is required")
     @Column(name = "username", nullable = false, unique = true, updatable = false) // usernames must be unique
     private String username;
 
+    // VALIDATIONS WILL BE IMPLEMENTED LATER, BECAUSE TEST DATA DOES NOT MEET THEM
+    // @Size(min = 8, message = "Password must be at least 8 characters")
+    // @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$",
+    //      message = "Password must contain an uppercase letter, a number, and a special character")
+    // @NotBlank(message = "Password is required")
     @Column(name = "password", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @NotBlank(message = "A unique email address is required")
     @Column(name = "email", nullable = false, unique = true) // emails must be unique
     private String email;
 
@@ -43,6 +56,7 @@ public class AppUser {
     @OneToMany(mappedBy = "assignedUser")
     @JsonIgnoreProperties("assignedUser") // to avoid infinite loop during JSON serialization
     private List<Project> projects;
+
 
     // Constructors
     public AppUser() {

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import hh.taskmanager.domain.AppUser;
 import hh.taskmanager.domain.AppUserRepository;
 
-@CrossOrigin
+@CrossOrigin   // API can be used in requests from different domains. for example, front end is localhost:3000, backend is localhost:8080
 @RestController
 public class AppUserRestController {
 

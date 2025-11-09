@@ -10,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Category {
@@ -18,9 +20,11 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long categoryId;
     
+    @NotBlank(message = "Category name is required")
     @Column(nullable = false)
     private String name;
 
+    @Size(max = 1000, message = "Description must be less than 1000 characters")
     private String description; // OPTIONAL
 
     @OneToMany(mappedBy = "category")

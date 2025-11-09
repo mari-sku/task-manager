@@ -17,6 +17,7 @@
       <div class="field">
         <label class="label">Title</label>
         <div class="control">
+<!-- hasErrors checks if form field is valid (whether BindingResult has errors or not) -->
           <input class="input" type="text" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-danger'" required>
           <p class="help is-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
         </div>

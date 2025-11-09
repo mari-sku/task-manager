@@ -25,6 +25,12 @@ h2.subtitle {
     background-color: #f1fdef;
 }
 
+/* Completed tasks */
+.completed .task-title {
+    text-decoration: line-through;
+    color: gray;
+}
+
 /* Task card styling */
 .task-card {
     display: flex;
@@ -124,12 +130,6 @@ input[type="checkbox"] {
     color: #555;
     min-height: 1rem;
     margin-bottom: 0.25rem;
-}
-
-/* Completed tasks */
-.completed .task-title {
-    text-decoration: line-through;
-    color: gray;
 }
 
 .button.is-custom {
