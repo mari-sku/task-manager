@@ -33,7 +33,6 @@ public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/", "/css/**", "/h2-console/**").permitAll()
             .requestMatchers("/admin/**").hasAuthority("ADMIN")
-            .requestMatchers("/projects/delete/**", "/tasks/delete/**").hasAuthority("ADMIN")
             .anyRequest().authenticated()
         )
         .csrf(csrf -> csrf

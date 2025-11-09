@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Transactional
 @SpringBootTest
-public class AppUserRepositoryTests {
+public class AppUserRepositoryTests extends DBCleanUpTestBase {
 
     // autowired injection for repository to be tested. constructor injection cannot be used here
 
@@ -35,8 +35,8 @@ public void createNewUser() {
         assertThat(user.getPassword()).isEqualTo("test12345");
         assertThat(user.getEmail()).isEqualTo("test1@hh.com");
         assertThat(user.getRole()).isEqualTo("USER");
-        assertThat(user.getTasks()).isNull();
-        assertThat(user.getProjects()).isNull();
+        assertThat(user.getTasks()).hasSize(0);
+        assertThat(user.getProjects()).hasSize(0);
     }
 
 // SEARCH user by username test
@@ -44,11 +44,11 @@ public void createNewUser() {
  public void findByUsernameShouldReturnUser() {
          AppUser user = new AppUser("test2", "test12345", "test2@hh.com", "USER", null, null);
         appUserRepository.save(user);
-        AppUser found = appUserRepository.findByUsername("test2");
+        Optional<AppUser> found = appUserRepository.findByUsername("test2");
         assertThat(found).isNotNull();
-        assertThat(found.getUsername()).isEqualTo("test2");
-        assertThat(found.getEmail()).isEqualTo("test2@hh.com");
-        assertThat(found.getRole()).isEqualTo("USER");
+        assertThat(found.get().getUsername()).isEqualTo("test2");
+        assertThat(found.get().getEmail()).isEqualTo("test2@hh.com");
+        assertThat(found.get().getRole()).isEqualTo("USER");
     }
 
     // SEARCH user by id test

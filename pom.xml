@@ -55,6 +55,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Spring Security test helpers for @WithMockUser, SecurityMockMvcRequestPostProcessors, etc. -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	<!-- REST (automatic REST endpoints for repositories) -->
 		 <dependency>
 			<groupId>org.springframework.boot</groupId>

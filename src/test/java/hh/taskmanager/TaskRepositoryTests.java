@@ -9,20 +9,17 @@ import hh.taskmanager.domain.TaskRepository;
 import jakarta.transaction.Transactional;
 import hh.taskmanager.domain.Category;
 import hh.taskmanager.domain.CategoryRepository;
-import hh.taskmanager.domain.Project;
-import hh.taskmanager.domain.ProjectRepository;
 import hh.taskmanager.domain.AppUser;
 import hh.taskmanager.domain.AppUserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Transactional
 @SpringBootTest
-public class TaskRepositoryTests {
+public class TaskRepositoryTests extends DBCleanUpTestBase {
 
     // autowire the repository to be tested. constructor injection cannot be used here
     @Autowired
@@ -31,8 +28,6 @@ public class TaskRepositoryTests {
     private AppUserRepository appUserRepository;
     @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired 
-    private ProjectRepository projectRepository;
 
 // ________________________________________________________________________________________________________________________________________________
 

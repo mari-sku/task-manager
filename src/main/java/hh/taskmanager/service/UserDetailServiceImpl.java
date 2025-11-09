@@ -1,5 +1,7 @@
 package hh.taskmanager.service;
 
+import java.util.Optional;
+
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,15 +24,15 @@ public class UserDetailServiceImpl implements UserDetailsService {
     // Spring Secutiry calls this method to load user details during authentication
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser currUser = appUserRepository.findByUsername(username);
+        Optional<AppUser> currUser = appUserRepository.findByUsername(username); //AppUser currUser = appUserRepository.findByUsername(username);
         if (currUser == null) {
             throw new UsernameNotFoundException("User not found: " + username);
         }
 
     // Found user will be wrapped in a Spring Security 'User' object (username + password + role)
         return new org.springframework.security.core.userdetails.User(
-                currUser.getUsername(),
-                currUser.getPassword(),
-                AuthorityUtils.createAuthorityList(currUser.getRole()));
+                currUser.get().getUsername(),
+                currUser.get().getPassword(),
+                AuthorityUtils.createAuthorityList(currUser.get().getRole()));
     }
 }

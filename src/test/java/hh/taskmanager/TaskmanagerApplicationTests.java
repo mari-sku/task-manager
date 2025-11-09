@@ -10,19 +10,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import hh.taskmanager.web.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest // this annotation tells that the entire application will be started for the
-				// test
+import static org.assertj.core.api.Assertions.assertThat;
+import hh.taskmanager.domain.AppUserRepository;
+import hh.taskmanager.domain.ProjectRepository;
+import hh.taskmanager.domain.TaskRepository;
+import hh.taskmanager.domain.CategoryRepository;
+import hh.taskmanager.domain.AppUser;
+import hh.taskmanager.domain.Project;
+import hh.taskmanager.domain.Task;
+import hh.taskmanager.domain.Category;
+
+@SpringBootTest // this annotation tells that the entire application will be started for the test
 @AutoConfigureMockMvc
-public class TaskmanagerApplicationTests {
+@WithMockUser  // needed so that we can test as a logged in user. otherwise endpoints lead to /login
+// @Transactional
+public class TaskmanagerApplicationTests extends DBCleanUpTestBase {
 	@Autowired
 	private MockMvc mockMvc;
 
-	// Autowire the controllers to be tested. constructor injection cannot be used
-	// here
+	// Autowire the controllers to be tested. constructor injection cannot be use here
 
 	@Autowired
 	private AdminController adminController;
@@ -38,6 +48,14 @@ public class TaskmanagerApplicationTests {
 	private TaskController taskController;
 	@Autowired
 	private TaskRestController taskRestController;
+	@Autowired
+	private AppUserRepository appUserRepository;
+	@Autowired
+	private ProjectRepository projectRepository;
+	@Autowired
+	private TaskRepository taskRepository;
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	// ________________________________________________________________________________________________________________________________________________
 
@@ -76,16 +94,30 @@ public class TaskmanagerApplicationTests {
 
 	@Test
 	public void editProjectPageLoads() throws Exception {
-		this.mockMvc.perform(get("/editproject"))
-				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("Edit Project")));
+	// create a user and project so the edit page exists (edit page URL needs project id)
+	AppUser user17 = new AppUser("user1", "user12345", "user1@hh.com", "USER");
+	appUserRepository.save(user17);
+	Project project = new Project("Project to edit", "description", false, user17);
+	projectRepository.save(project);
+
+	this.mockMvc.perform(get("/editproject/" + project.getProjectId()))
+		.andExpect(status().isOk())
+		.andExpect(content().string(containsString("Edit Project")));
 	}
 
 	@Test
 	public void editTaskPageLoads() throws Exception {
-		this.mockMvc.perform(get("/edittask"))
-				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("Edit Task")));
+	// create user, category and task so the edit page exists (edit page URL needs task id)
+	AppUser user2 = new AppUser("user2", "user12345", "user2@hh.com", "USER");
+	appUserRepository.save(user2);
+	Category category = new Category("Category1", "description");
+	categoryRepository.save(category);
+	Task task = new Task("Task to edit", false, true, category, user2);
+	taskRepository.save(task);
+
+	this.mockMvc.perform(get("/edittask/" + task.getTaskId()))
+		.andExpect(status().isOk())
+		.andExpect(content().string(containsString("Edit Task")));
 	}
 
 	@Test

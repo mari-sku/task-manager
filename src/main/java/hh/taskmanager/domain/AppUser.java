@@ -1,6 +1,7 @@
 package hh.taskmanager.domain;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -53,19 +54,19 @@ public class AppUser {
         this.password = password;
         this.email = email;
         this.role = role;
-        this.tasks = tasks;
-        this.projects = projects;
+        this.tasks = new ArrayList<>(); //empty list
+        this.projects = new ArrayList<>(); // empty list
     }
 
-    // constructor without tasks and projects
+    // constructor without tasks and projects (empty list)
     
     public AppUser(String username, String password, String email, String role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
-        this.tasks = null;
-        this.projects = null;
+        this.tasks = new ArrayList<>();
+        this.projects = new ArrayList<>();
     }
 
     // Getters and setters

@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @SpringBootTest
 @Transactional
-public class ProjectRepositoryTests {
+public class ProjectRepositoryTests extends DBCleanUpTestBase {
 
     @Autowired
     private ProjectRepository projectRepository;

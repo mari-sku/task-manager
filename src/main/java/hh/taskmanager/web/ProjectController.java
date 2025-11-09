@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import jakarta.validation.Valid;
+
+import java.util.Optional;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 
@@ -46,9 +49,9 @@ public String saveProject(@Valid @ModelAttribute Project project, BindingResult 
     }
 
     if (currentUser != null) {
-        AppUser user = appUserRepository.findByUsername(currentUser.getUsername());
-        if (user != null) {
-            project.setAssignedUser(user);
+        Optional<AppUser> user = appUserRepository.findByUsername(currentUser.getUsername());
+        if (user.isPresent()) {
+            project.setAssignedUser(user.get());
         }
     }
 

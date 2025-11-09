@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Transactional
 @SpringBootTest
-public class CategoryRepositoryTests {
+public class CategoryRepositoryTests extends DBCleanUpTestBase {
 
 // autowire the repository to be tested. constructor injection cannot be used here
 @Autowired
