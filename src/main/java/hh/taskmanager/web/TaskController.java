@@ -92,20 +92,29 @@ public class TaskController {
 
     // SAVE EDITED TASK
 
-    @PostMapping("/edittask/{taskId}")
-    public String saveEditedTask(@PathVariable Long taskId, @ModelAttribute Task task) {
-        Task existingTask = taskRepository.findById(taskId).orElseThrow();
+@PostMapping("/edittask/{taskId}")
+public String saveEditedTask(@PathVariable Long taskId, @Valid @ModelAttribute Task task, BindingResult bindingResult, Model model) {
 
-        existingTask.setTitle(task.getTitle());
-        existingTask.setDescription(task.getDescription());
-        existingTask.setDueDateTime(task.getDueDateTime());
-        existingTask.setPrivate(task.isPrivate());
-        existingTask.setCategory(task.getCategory());
-        existingTask.setProject(task.getProject());
-
-        taskRepository.save(existingTask);
-        return "redirect:/projects";
+    if (bindingResult.hasErrors()) {
+        // if validation fails, re-render the same edit form
+        model.addAttribute("projects", projectRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("appusers", appUserRepository.findAll());
+        return "edittask";
     }
+
+    Task existingTask = taskRepository.findById(taskId).orElseThrow();
+
+    existingTask.setTitle(task.getTitle());
+    existingTask.setDescription(task.getDescription());
+    existingTask.setDueDateTime(task.getDueDateTime());
+    existingTask.setPrivate(task.isPrivate());
+    existingTask.setCategory(task.getCategory());
+    existingTask.setProject(task.getProject());
+
+    taskRepository.save(existingTask);
+    return "redirect:/projects";
+}
 
     // TOGGLE TASK AS COMPLETED
 

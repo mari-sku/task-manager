@@ -23,8 +23,11 @@
             <div class="field">
                 <label class="label">Title</label>
                 <div class="control">
-                    <input class="input" type="text" th:field="*{title}" required>
+                    <input class="input" type="text" th:field="*{title}" 
+                     th:classappend="${#fields.hasErrors('title')} ? 'is-danger'"
+                     required>
                 </div>
+                <p class="help is-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
             </div>
 
             <!-- description -->
@@ -39,8 +42,10 @@
             <div class="field">
                 <label class="label">Due Date & Time <span class="has-text-grey-light">(optional)</span></label>
                 <div class="control">
-                    <input class="input" type="datetime-local" th:field="*{dueDateTime}">
+                    <input class="input" type="datetime-local" th:field="*{dueDateTime}"
+                     th:classappend="${#fields.hasErrors('dueDateTime')} ? 'is-danger'">
                 </div>
+                <p class="help is-danger" th:if="${#fields.hasErrors('dueDateTime')}" th:errors="*{dueDateTime}"></p>
                 <p class="help has-text-grey">Leave empty if no deadline.</p>
             </div>
 
